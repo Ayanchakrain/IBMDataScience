@@ -1,0 +1,26 @@
+--Problem 1: Find the total number of crimes recorded in the CRIME table.
+Select count(1) from ChicagoCrimeData;
+--Problem 2: List community areas with per capita income less than 11000.
+select COMMUNITY_AREA_NAME from Census_Data where PER_CAPITA_INCOME < 11000;
+--Problem 3: List all case numbers for crimes involving minors?
+Select CASE_NUMBER from ChicagoCrimeData where DESCRIPTION like 'MINOR%' or DESCRIPTION like '%MINOR';
+--Problem 4: List all kidnapping crimes involving a child?(children are not considered minors for the purposes of crime analysis)
+Select CASE_NUMBER from ChicagoCrimeData where 
+DESCRIPTION like 'CHILD%' or DESCRIPTION like '%CHILD' or DESCRIPTION like '%CHILD%'
+and PRIMARY_TYPE='KIDNAPPING';
+--Problem 5: What kind of crimes were recorded at schools?
+Select Distinct PRIMARY_TYPE from ChicagoCrimeData where LOCATION_DESCRIPTION like 'SCHOOL%';
+--Problem 6: List the average safety score for all types of schools.
+select Elementary_middle_or_high_school,avg(cast(Safety_Score as double)) from chicagopublicschools group by Elementary_middle_or_high_school;
+--Problem 7: List 5 community areas with highest % of households below poverty line.
+select COMMUNITY_AREA_NAME from Census_Data order by PERCENT_HOUSEHOLDS_BELOW_POVERTY desc fetch first 5 rows only;
+--Problem 8: Which community area(number) is most crime prone?
+select COMMUNITY_AREA_NUMBER from ChicagoCrimeData where COMMUNITY_AREA_NUMBER <> ''
+ group by COMMUNITY_AREA_NUMBER order by count(1) desc fetch first rows only;
+--Problem 9: Use a sub-query to find the name of the community area with highest hardship index.
+select COMMUNITY_AREA_NAME from Census_Data where hardship_index 
+= (select max(hardship_index) from Census_Data);
+--Problem 10: Use a sub-query to determine the Community Area Name with most number of crimes?
+select COMMUNITY_AREA_NAME from Census_Data where COMMUNITY_AREA_NUMBER in (
+select COMMUNITY_AREA_NUMBER from ChicagoCrimeData where COMMUNITY_AREA_NUMBER <> ''
+ group by COMMUNITY_AREA_NUMBER order by count(1) desc fetch first 1 rows only);
